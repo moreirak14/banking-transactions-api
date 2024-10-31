@@ -1,0 +1,9 @@
+[default]
+TITLE = "Banking Transactions API"
+DESCRIPTION = "API to manage banking transactions"
+VERSION = "0.1.0"
+HOST = "0.0.0.0"
+PORT = 8080
+RELOAD = false
+LOG_LEVEL = "INFO"
+ALLOWED_ORIGINS = ["*"]
