@@ -1,4 +1,4 @@
-from sqlalchemy import MetaData, Uuid, Integer, Sequence
+from sqlalchemy import Integer, MetaData, Sequence, Uuid
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 

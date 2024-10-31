@@ -3,8 +3,8 @@ import logging
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from src.routers.v1 import router as v1_router
 from config import settings
+from src.routers.v1 import router as v1_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from pydantic import Field
 
 from src.schemas import BaseSchema

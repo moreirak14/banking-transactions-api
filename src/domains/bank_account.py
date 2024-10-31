@@ -17,9 +17,6 @@ class BankAccountDomain:
             raise ValueError("O saldo da conta não pode ser negativo")
 
     def data(self) -> BankAccountModel:
-        _data = BankAccountModel(
-            id=self.id,
-            balance=self.balance
-        )
+        _data = BankAccountModel(id=self.id, balance=self.balance)
 
         return _data
