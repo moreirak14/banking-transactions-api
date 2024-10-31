@@ -19,6 +19,8 @@ class BankAccountRepository:
         except SQLAlchemyError as error:
             session.rollback()
             raise error from error
+        finally:
+            session.close()
 
     async def get(self, account_id: Uuid) -> BankAccountModel:
         try:
@@ -36,3 +38,5 @@ class BankAccountRepository:
         except SQLAlchemyError as error:
             session.rollback()
             raise error from error
+        finally:
+            session.close()
