@@ -13,6 +13,37 @@ sqlalchemy = "^2.0.36"
 alembic = "^1.13.3"
 psycopg2-binary = "^2.9.10"
 
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^4.0.1"
+
+[tool.ruff]
+line-length = 79
+lint.ignore = ["SIM118"]
+lint.select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+]
+
+# In addition to the standard set of exclusions, omit all tests, plus a specific file.
+extend-exclude = ["tests"]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends"]
+
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = 79
+
 
 [build-system]
 requires = ["poetry-core"]
