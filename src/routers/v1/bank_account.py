@@ -13,6 +13,7 @@ bank_account_router = APIRouter(
     path="",
     description="Criação de conta bancária",
     status_code=status.HTTP_201_CREATED,
+    response_model=BankAccountResponse,
 )
 async def create_bank_account(
     data: BankAccountRequest,
