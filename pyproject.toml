@@ -15,6 +15,9 @@ psycopg2-binary = "^2.9.10"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.0.1"
+pytest = "^8.3.3"
+pytest-cov = "^6.0.0"
+
 
 [tool.ruff]
 line-length = 79
@@ -44,6 +47,16 @@ extend-immutable-calls = ["fastapi.Depends"]
 docstring-code-format = true
 docstring-code-line-length = 79
 
+
+[tool.pytest.ini_options]
+addopts = [
+    "--cov=./src",
+    "--cov-report=html",
+    "--cov-fail-under=50",
+    "--color=yes",
+    "-vv",
+]
+testpaths = ["tests"]
 
 [build-system]
 requires = ["poetry-core"]
