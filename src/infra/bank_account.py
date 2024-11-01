@@ -3,6 +3,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from src.adapters.databases import Session
 from src.adapters.orm.models import BankAccountModel
+from src.infra.exceptions import SQLAlchemyDatabaseError
 
 
 class BankAccountRepository:
@@ -18,7 +19,7 @@ class BankAccountRepository:
                 return data
         except SQLAlchemyError as error:
             session.rollback()
-            raise error from error
+            raise SQLAlchemyDatabaseError(detail=str(error)) from error
         finally:
             session.close()
 
@@ -37,6 +38,6 @@ class BankAccountRepository:
                 return account
         except SQLAlchemyError as error:
             session.rollback()
-            raise error from error
+            raise SQLAlchemyDatabaseError(detail=str(error)) from error
         finally:
             session.close()
