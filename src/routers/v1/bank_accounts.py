@@ -15,7 +15,7 @@ bank_accounts_router = APIRouter(
     status_code=status.HTTP_201_CREATED,
     response_model=BankAccountResponse,
 )
-async def create_bank_account(
+async def create_bank_accounts(
     data: BankAccountRequest,
 ) -> BankAccountResponse:
     service = BankAccountService()
