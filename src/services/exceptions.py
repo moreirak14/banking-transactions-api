@@ -9,3 +9,8 @@ class BadRequest(HTTPException):
 class InvalidBankAccountDataError(BadRequest):
     def __init__(self, detail: str = None) -> None:
         super().__init__(detail=detail)
+
+
+class InvalidTransactionDataError(BadRequest):
+    def __init__(self, detail: str = None) -> None:
+        super().__init__(detail=detail)

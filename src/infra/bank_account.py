@@ -41,3 +41,24 @@ class BankAccountRepository:
             raise SQLAlchemyDatabaseError(detail=str(error)) from error
         finally:
             session.close()
+
+    async def get_by_account_number(
+        self, account_number: int
+    ) -> BankAccountModel:
+        try:
+            with self.session as session:
+                statement = (
+                    select(BankAccountModel)
+                    .where(BankAccountModel.account_number == account_number)
+                    .with_for_update()
+                )
+                account: BankAccountModel = (
+                    session.execute(statement).unique().scalar_one_or_none()
+                )
+
+                return account
+        except SQLAlchemyError as error:
+            session.rollback()
+            raise SQLAlchemyDatabaseError(detail=str(error)) from error
+        finally:
+            session.close()

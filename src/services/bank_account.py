@@ -17,7 +17,7 @@ class BankAccountService:
         """
         try:
             bank_data_validate = BankAccountDomain(**data.model_dump())
-            bank_data: BankAccountModel = bank_data_validate.data()
+            bank_data: BankAccountModel = bank_data_validate.parse_model()
         except ValueError as error:
             raise InvalidBankAccountDataError(str(error)) from error
 
