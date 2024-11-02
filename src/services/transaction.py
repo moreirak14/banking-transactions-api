@@ -2,7 +2,11 @@ from src.adapters.orm.models import BankAccountModel, TransactionModel
 from src.domains.transaction import TransactionDomain
 from src.infra.bank_account import BankAccountRepository
 from src.infra.transaction import TransactionRepository
-from src.schemas.transaction import TransactionRequest, TransactionResponse
+from src.schemas.transaction import (
+    TransactionDepositRequest,
+    TransactionResponse,
+    TransactionWithdrawRequest,
+)
 from src.services.exceptions import BadRequest, InvalidTransactionDataError
 
 
@@ -11,19 +15,27 @@ class TransactionService:
         self.bank_account_repository = BankAccountRepository()
         self.transaction_repository = TransactionRepository()
 
-    async def create_bank_deposit(self, data: TransactionRequest) -> TransactionResponse:
+    async def create_bank_deposit(
+        self, data: TransactionDepositRequest
+    ) -> TransactionResponse:
         """
         Create a bank deposit transaction
         :param data: TransactionRequest
         :return: TransactionResponse
         """
-        transaction_data: TransactionModel = await self._check_transaction(data=data)
+        transaction_data: TransactionModel = await self._check_transaction(
+            data=data
+        )
 
-        bank_data: BankAccountModel = await self._check_and_get_account(account_number=data.account_number)
+        bank_data: BankAccountModel = await self._check_and_get_account(
+            account_number=data.account_number
+        )
 
         transaction_data.bank_account_id = bank_data.id
 
-        transaction_data: TransactionModel = await self._create_transaction(data=transaction_data)
+        transaction_data: TransactionModel = await self._create_transaction(
+            data=transaction_data
+        )
 
         bank_data.balance += transaction_data.balance
 
@@ -34,22 +46,28 @@ class TransactionService:
             balance=bank_data.balance,
         )
 
-    async def create_bank_withdraw(self, data: TransactionRequest):
+    async def create_bank_withdraw(self, data: TransactionWithdrawRequest):
         """
         Create a bank withdraw transaction
         :param data: TransactionRequest
         :return: TransactionResponse
         """
-        transaction_data: TransactionModel = await self._check_transaction(data=data)
+        transaction_data: TransactionModel = await self._check_transaction(
+            data=data
+        )
 
-        bank_data: BankAccountModel = await self._check_and_get_account(account_number=data.account_number)
+        bank_data: BankAccountModel = await self._check_and_get_account(
+            account_number=data.account_number
+        )
 
         if bank_data.balance < transaction_data.balance:
             raise BadRequest("Saldo insuficiente")
 
         transaction_data.bank_account_id = bank_data.id
 
-        transaction_data: TransactionModel = await self._create_transaction(data=transaction_data)
+        transaction_data: TransactionModel = await self._create_transaction(
+            data=transaction_data
+        )
 
         bank_data.balance -= transaction_data.balance
 
@@ -60,8 +78,7 @@ class TransactionService:
             balance=bank_data.balance,
         )
 
-
-    async def create_bank_transfer(self, data: TransactionRequest):
+    async def create_bank_transfer(self, data):
         """
         Create a bank transfer transaction
         :param data: TransactionRequest
@@ -70,7 +87,9 @@ class TransactionService:
         pass
 
     @staticmethod
-    async def _check_transaction(data: TransactionRequest) -> TransactionModel:
+    async def _check_transaction(
+        data: TransactionDepositRequest | TransactionWithdrawRequest,
+    ) -> TransactionModel:
         try:
             transaction_data_validate = TransactionDomain(**data.model_dump())
             return transaction_data_validate.parse_model()
@@ -84,7 +103,11 @@ class TransactionService:
         :return: BankAccountModel
         """
         try:
-            bank_data: BankAccountModel = await self.bank_account_repository.get_by_account_number(account_number=account_number)
+            bank_data: BankAccountModel = (
+                await self.bank_account_repository.get_by(
+                    account_number=account_number, for_update=True
+                )
+            )
         except Exception as error:
             raise error from error
 
@@ -93,7 +116,9 @@ class TransactionService:
 
         return bank_data
 
-    async def _create_transaction(self, data: TransactionModel) -> TransactionModel:
+    async def _create_transaction(
+        self, data: TransactionModel
+    ) -> TransactionModel:
         try:
             transaction_data = await self.transaction_repository.save(data)
             return transaction_data

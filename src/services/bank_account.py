@@ -1,8 +1,12 @@
 from src.adapters.orm.models import BankAccountModel
 from src.domains.bank_account import BankAccountDomain
 from src.infra.bank_account import BankAccountRepository
-from src.schemas.bank_account import BankAccountRequest, BankAccountResponse
-from src.services.exceptions import InvalidBankAccountDataError
+from src.schemas.bank_account import (
+    BankAccountRequest,
+    BankAccountResponse,
+    GetBankAccountResponse,
+)
+from src.services.exceptions import BadRequest, InvalidBankAccountDataError
 
 
 class BankAccountService:
@@ -30,4 +34,26 @@ class BankAccountService:
         return BankAccountResponse(
             account_number=bank_data.account_number,
             balance=bank_data.balance,
+        )
+
+    async def get_by(self, account_number: int) -> GetBankAccountResponse:
+        """
+        Get bank account by account number
+        :param account_number: int
+        :return: GetBankAccountResponse
+        """
+        try:
+            bank_data = await self.repository.get_by(
+                account_number=account_number
+            )
+        except Exception as error:
+            raise error from error
+
+        if not bank_data:
+            raise BadRequest(f"Conta {account_number} não encontrada")
+
+        return GetBankAccountResponse(
+            account_number=bank_data.account_number,
+            balance=bank_data.balance,
+            transactions=bank_data.transactions,
         )

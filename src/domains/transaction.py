@@ -21,7 +21,9 @@ class TransactionDomain:
 
     def validate(self):
         if self.balance <= 0:
-            raise ValueError("O valor da transação não pode ser negativo ou zero")
+            raise ValueError(
+                "O valor da transação não pode ser negativo ou zero"
+            )
 
     def parse_model(self) -> TransactionModel:
         _data = TransactionModel(

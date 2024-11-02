@@ -1,5 +1,6 @@
-from sqlalchemy import Uuid, select
+from sqlalchemy import Uuid, exists, select
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import joinedload
 
 from src.adapters.databases import Session
 from src.adapters.orm.models import BankAccountModel
@@ -42,16 +43,37 @@ class BankAccountRepository:
         finally:
             session.close()
 
-    async def get_by_account_number(
-        self, account_number: int
-    ) -> BankAccountModel:
+    async def get_by(
+        self, account_number: int, for_update: bool = False
+    ) -> BankAccountModel | None:
         try:
             with self.session as session:
-                statement = (
-                    select(BankAccountModel)
-                    .where(BankAccountModel.account_number == account_number)
-                    .with_for_update()
-                )
+                bank_account_exists = session.query(
+                    exists().where(
+                        BankAccountModel.account_number == account_number
+                    )
+                ).scalar()
+
+                if not bank_account_exists:
+                    return None
+
+                if for_update:
+                    statement = (
+                        select(BankAccountModel)
+                        .where(
+                            BankAccountModel.account_number == account_number
+                        )
+                        .with_for_update()
+                    )
+                else:
+                    statement = select(BankAccountModel).where(
+                        BankAccountModel.account_number == account_number
+                    )
+
+                    statement = statement.options(
+                        joinedload(BankAccountModel.transactions)
+                    )
+
                 account: BankAccountModel = (
                     session.execute(statement).unique().scalar_one_or_none()
                 )
