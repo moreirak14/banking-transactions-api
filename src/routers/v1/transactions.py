@@ -4,6 +4,8 @@ from fastapi.security import HTTPBearer
 from src.schemas.transaction import (
     TransactionDepositRequest,
     TransactionResponse,
+    TransactionTransferRequest,
+    TransactionTransferResponse,
     TransactionWithdrawRequest,
 )
 from src.services.transaction import TransactionService
@@ -39,5 +41,20 @@ async def create_bank_withdraws(
 ) -> TransactionResponse:
     service = TransactionService()
     result = await service.create_bank_withdraw(data=data)
+
+    return result
+
+
+@transactions_router.post(
+    path="/bank-transfers",
+    description="Criação de transferência bancária",
+    status_code=status.HTTP_201_CREATED,
+    response_model=TransactionResponse,
+)
+async def create_bank_transfers(
+    data: TransactionTransferRequest,
+) -> TransactionTransferResponse:
+    service = TransactionService()
+    result = await service.create_bank_transfer(data=data)
 
     return result
