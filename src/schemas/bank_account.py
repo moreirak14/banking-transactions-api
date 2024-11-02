@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import Field, field_validator
 
 from src.enums.transactions_types import TransactionsTypes
@@ -17,6 +19,7 @@ class BankAccountTransactionResponse(BaseSchema):
     type: TransactionsTypes = Field(description="Tipo de transação")
     account_number: int = Field(description="Número da conta")
     balance: int = Field(description="Saldo da conta")
+    created_at: datetime = Field(description="Data de criação")
 
 
 class GetBankAccountResponse(BankAccountResponse):
@@ -36,6 +39,7 @@ class GetBankAccountResponse(BankAccountResponse):
                 type=transaction.type,
                 account_number=transaction.account_number,
                 balance=transaction.balance,
+                created_at=transaction.created_at,
             )
             transactions.append(transaction)
 
