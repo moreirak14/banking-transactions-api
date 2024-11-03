@@ -19,14 +19,14 @@ class TransactionResponse(BaseSchema):
 
 class TransactionDepositRequest(BaseTransactionRequest):
     type: str = Field(
-        default=TransactionsTypes.deposit.value,
+        default=TransactionsTypes.DEPOSIT.value,
         description="Tipo de transação",
     )
 
     @field_validator("type", mode="before")
     def validate_type(cls, value: Any):
         try:
-            if value != TransactionsTypes.deposit.value:
+            if value != TransactionsTypes.DEPOSIT.value:
                 raise SchemaValueError(
                     "Tipo de transação inválido",
                 )
@@ -37,14 +37,14 @@ class TransactionDepositRequest(BaseTransactionRequest):
 
 class TransactionWithdrawRequest(BaseTransactionRequest):
     type: str = Field(
-        default=TransactionsTypes.withdraw.value,
+        default=TransactionsTypes.WITHDRAW.value,
         description="Tipo de transação",
     )
 
     @field_validator("type", mode="before")
     def validate_type(cls, value: Any):
         try:
-            if value != TransactionsTypes.withdraw.value:
+            if value != TransactionsTypes.WITHDRAW.value:
                 raise SchemaValueError(
                     "Tipo de transação inválido",
                 )
@@ -55,7 +55,7 @@ class TransactionWithdrawRequest(BaseTransactionRequest):
 
 class TransactionTransferRequest(BaseSchema):
     type: str = Field(
-        default=TransactionsTypes.transfer.value,
+        default=TransactionsTypes.TRANSFER.value,
         description="Tipo de transação",
     )
     from_account: BaseTransactionRequest = Field(
@@ -68,7 +68,7 @@ class TransactionTransferRequest(BaseSchema):
     @field_validator("type", mode="before")
     def validate_type(cls, value: Any):
         try:
-            if value != TransactionsTypes.transfer.value:
+            if value != TransactionsTypes.TRANSFER.value:
                 raise SchemaValueError(
                     "Tipo de transação inválido",
                 )

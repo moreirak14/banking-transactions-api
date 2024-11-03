@@ -94,7 +94,7 @@ class TransactionService:
         :return: TransactionResponse
         """
         from_account_data: TransactionModel = await self._check_transaction(
-            type=TransactionsTypes.transfer_sent, data=data.from_account
+            type=TransactionsTypes.TRANSFER_SENT, data=data.from_account
         )
 
         from_account_bank_data: BankAccountModel = (
@@ -110,7 +110,7 @@ class TransactionService:
 
         to_account_data: TransactionModel = TransactionModel(
             id=uuid4(),
-            type=TransactionsTypes.transfer_received,
+            type=TransactionsTypes.TRANSFER_RECEIVED,
             account_number=data.to_account,
             balance=from_account_data.balance,
             created_at=set_timezone_now(),
