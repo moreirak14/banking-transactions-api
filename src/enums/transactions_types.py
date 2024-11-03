@@ -2,8 +2,8 @@ from enum import Enum
 
 
 class TransactionsTypes(Enum):
-    DEPOSIT = "deposit"
-    WITHDRAW = "withdraw"
-    TRANSFER = "transfer"
-    TRANSFER_SENT = "transfer_sent"
-    TRANSFER_RECEIVED = "transfer_received"
+    DEPOSIT = "DEPOSIT"
+    WITHDRAW = "WITHDRAW"
+    TRANSFER = "TRANSFER"
+    TRANSFER_SENT = "TRANSFER_SENT"
+    TRANSFER_RECEIVED = "TRANSFER_RECEIVED"
