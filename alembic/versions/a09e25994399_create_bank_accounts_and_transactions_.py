@@ -48,7 +48,12 @@ def upgrade() -> None:
         sa.Column(
             "type",
             sa.Enum(
-                "deposit", "withdraw", "transfer", name="transactionstypes"
+                "deposit",
+                "withdraw",
+                "transfer",
+                "transfer_sent",
+                "transfer_received",
+                name="transactionstypes",
             ),
             nullable=False,
         ),

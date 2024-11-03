@@ -49,7 +49,7 @@ async def create_bank_withdraws(
     path="/bank-transfers",
     description="Criação de transferência bancária",
     status_code=status.HTTP_201_CREATED,
-    response_model=TransactionResponse,
+    response_model=TransactionTransferResponse,
 )
 async def create_bank_transfers(
     data: TransactionTransferRequest,

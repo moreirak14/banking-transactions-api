@@ -5,6 +5,7 @@ from sqlalchemy.orm import joinedload
 from src.adapters.databases import Session
 from src.adapters.orm.models import BankAccountModel
 from src.infra.exceptions import SQLAlchemyDatabaseError
+from src.utils.set_datetime import set_timezone_now
 
 
 class BankAccountRepository:
@@ -14,6 +15,7 @@ class BankAccountRepository:
     async def save(self, data: BankAccountModel):
         try:
             with self.session as session:
+                data.updated_at = set_timezone_now()
                 session.add(data)
                 session.commit()
 

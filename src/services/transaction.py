@@ -1,4 +1,5 @@
 from typing import Any
+from uuid import uuid4
 
 from src.adapters.orm.models import BankAccountModel, TransactionModel
 from src.domains.transaction import TransactionDomain
@@ -13,6 +14,7 @@ from src.schemas.transaction import (
     TransactionWithdrawRequest,
 )
 from src.services.exceptions import BadRequest, InvalidTransactionDataError
+from src.utils.set_datetime import set_timezone_now
 
 
 class TransactionService:
@@ -92,7 +94,7 @@ class TransactionService:
         :return: TransactionResponse
         """
         from_account_data: TransactionModel = await self._check_transaction(
-            type=TransactionsTypes(data.type), data=data.from_account
+            type=TransactionsTypes.transfer_sent, data=data.from_account
         )
 
         from_account_bank_data: BankAccountModel = (
@@ -101,11 +103,17 @@ class TransactionService:
             )
         )
 
-        to_account_data = from_account_data
-        to_account_data.account_number = data.to_account
+        if from_account_bank_data.balance < from_account_data.balance:
+            raise BadRequest("Saldo insuficiente")
 
-        to_account_data: TransactionModel = await self._check_transaction(
-            type=TransactionsTypes(data.type), data=to_account_data
+        from_account_data.bank_account_id = from_account_bank_data.id
+
+        to_account_data: TransactionModel = TransactionModel(
+            id=uuid4(),
+            type=TransactionsTypes.transfer_received,
+            account_number=data.to_account,
+            balance=from_account_data.balance,
+            created_at=set_timezone_now(),
         )
 
         to_account_bank_data: BankAccountModel = (
@@ -114,26 +122,19 @@ class TransactionService:
             )
         )
 
-        if from_account_bank_data.balance < from_account_data.balance:
-            raise BadRequest("Saldo insuficiente")
-
-        from_account_data.bank_account_id = from_account_bank_data.id
-
         from_account_data: TransactionModel = await self._create_transaction(
             data=from_account_data
         )
 
+        to_account_data.bank_account_id = to_account_bank_data.id
+
+        await self._create_transaction(data=to_account_data)
+
+        to_account_bank_data.balance += from_account_data.balance
+
         from_account_bank_data.balance -= from_account_data.balance
 
         await self._update_bank_account(data=from_account_bank_data)
-
-        to_account_data.bank_account_id = to_account_bank_data.id
-
-        to_account_data: TransactionModel = await self._create_transaction(
-            data=to_account_data
-        )
-
-        to_account_bank_data.balance += to_account_data.balance
 
         await self._update_bank_account(data=to_account_bank_data)
 
