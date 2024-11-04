@@ -39,9 +39,6 @@ lint.select = [
     "I",
 ]
 
-# In addition to the standard set of exclusions, omit all tests, plus a specific file.
-extend-exclude = ["tests"]
-
 [tool.ruff.lint.flake8-bugbear]
 extend-immutable-calls = ["fastapi.Depends"]
 

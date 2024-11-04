@@ -153,17 +153,24 @@ async def main():
 if __name__ == "__main__":
     asyncio.run(main())
     """
-    Ao me referir a concorrência, logo imagino filas de execução assíncronas, sendo elas executadas de forma paralela.
-    Neste exemplo, utilizamos `asyncio.gather` para executar as transações, também utilizamos `asyncio.Queue` para criar uma fila
-    de execução de transferências, onde cada transferência é executada de forma assíncrona.
-    No Python, temos o Celery, que é uma ferramenta de fila de tarefas distribuída, que nos permite executar tarefas assíncronas em segundo plano.
-    Mundo afora, temos o RabbitMQ, Apache Kafka, Amazon SQS, Google Cloud Pub/Sub, entre outros. Desses, o que já tive
-    a oportunidade de trabalhar foi o Amazon SQS, Pub/Sub e tbm já realizei um exemplo prático de pagamentos utilizando Go + RabbitMQ.
+    Ao me referir a concorrência, logo imagino filas de execução assíncronas,
+    sendo elas executadas de forma paralela. Neste exemplo, utilizamos
+    `asyncio.gather` para executar as transações, também utilizamos
+    `asyncio.Queue` para criar uma fila de execução de transferências,
+    onde cada transferência é executada de forma assíncrona. No Python, temos
+    o Celery, que é uma ferramenta de fila de tarefas distribuída, que nos
+    permite executar tarefas assíncronas em segundo plano. Mundo afora, temos
+    o RabbitMQ, Apache Kafka, Amazon SQS, Google Cloud Pub/Sub, entre outros.
+    Desses, o que já tive a oportunidade de trabalhar foi o Amazon SQS,
+    Pub/Sub e tbm já realizei um exemplo prático de pagamentos utilizando
+    Go + RabbitMQ.
 
     Agora vamos ao resultado da execução do script:
-    -> Comparando este resultado com a tabela verdade do case, percebemos que a maneira que foi desenvolvido
-    o script atende as necessidades, pois o saldo das contas está correto e respeitando cada execução. Por mais que
-    tenhamos concorrência, as transações são executadas seguindo a ordem de cada requisição.
+    -> Comparando este resultado com a tabela verdade do case, percebemos que
+    a maneira que foi desenvolvido o script atende as necessidades, pois o
+    saldo das contas está correto e respeitando cada execução. Por mais que
+    tenhamos concorrência, as transações são executadas seguindo a ordem de
+    cada requisição.
 
     Depósito
     Saldo da Conta 1: 100

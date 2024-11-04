@@ -29,7 +29,7 @@ async def create_bank_account_response_mock():
     response = BankAccountResponse(account_number=123456, balance=100)
     mocked = patch.object(
         BankAccountService,
-        'create',
+        "create",
         return_value=response,
         autospec=True,
     )

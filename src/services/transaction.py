@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 from uuid import uuid4
 
@@ -16,6 +17,9 @@ from src.schemas.transaction import (
 from src.services.exceptions import BadRequest, InvalidTransactionDataError
 from src.utils.set_datetime import set_timezone_now
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 
 class TransactionService:
     def __init__(self):
@@ -30,6 +34,7 @@ class TransactionService:
         :param data: TransactionRequest
         :return: TransactionResponse
         """
+        logger.info(f"Creating bank deposit: {data}")
         transaction_data: TransactionModel = await self._check_transaction(
             type=TransactionsTypes(data.type), data=data
         )
@@ -48,6 +53,8 @@ class TransactionService:
 
         await self._update_bank_account(data=bank_data)
 
+        logger.info("Bank deposit created successfully!")
+
         return TransactionResponse(
             account_number=bank_data.account_number,
             balance=bank_data.balance,
@@ -59,6 +66,7 @@ class TransactionService:
         :param data: TransactionRequest
         :return: TransactionResponse
         """
+        logger.info(f"Creating bank withdraw: {data}")
         transaction_data: TransactionModel = await self._check_transaction(
             type=TransactionsTypes(data.type), data=data
         )
@@ -80,6 +88,8 @@ class TransactionService:
 
         await self._update_bank_account(data=bank_data)
 
+        logger.info("Bank withdraw created successfully!")
+
         return TransactionResponse(
             account_number=bank_data.account_number,
             balance=bank_data.balance,
@@ -93,6 +103,7 @@ class TransactionService:
         :param data: TransactionTransferRequest
         :return: TransactionResponse
         """
+        logger.info(f"Creating bank transfer: {data}")
         from_account_data: TransactionModel = await self._check_transaction(
             type=TransactionsTypes.TRANSFER_SENT, data=data.from_account
         )
@@ -138,6 +149,8 @@ class TransactionService:
 
         await self._update_bank_account(data=to_account_bank_data)
 
+        logger.info("Bank transfer created successfully!")
+
         return TransactionTransferResponse(
             from_account=TransactionResponse(
                 account_number=from_account_bank_data.account_number,
@@ -170,6 +183,9 @@ class TransactionService:
         :param account_number: int
         :return: BankAccountModel
         """
+        logger.info(
+            f"Getting bank account by account number: {account_number}"
+        )
         try:
             bank_data: BankAccountModel = (
                 await self.bank_account_repository.get_by(
@@ -177,9 +193,14 @@ class TransactionService:
                 )
             )
         except Exception as error:
+            logger.error(
+                f"Error getting bank account by account number: {account_number}"  # noqa
+            )
+            logger.error(f"Error: {error}")
             raise error from error
 
         if not bank_data:
+            logger.error(f"Bank account not found: {account_number}")
             raise BadRequest(f"Conta {account_number} não encontrada")
 
         return bank_data
@@ -187,14 +208,21 @@ class TransactionService:
     async def _create_transaction(
         self, data: TransactionModel
     ) -> TransactionModel:
+        logger.info(f"Creating transaction: {data}")
         try:
             transaction_data = await self.transaction_repository.save(data)
+            logger.info(f"Transaction created: {transaction_data}")
             return transaction_data
         except Exception as error:
+            logger.error(f"Error creating transaction: {data}")
+            logger.error(f"Error: {error}")
             raise error from error
 
     async def _update_bank_account(self, data: BankAccountModel):
+        logger.info(f"Updating bank account: {data}")
         try:
             await self.bank_account_repository.save(data)
         except Exception as error:
+            logger.error(f"Error updating bank account: {data}")
+            logger.error(f"Error: {error}")
             raise error from error
