@@ -10,7 +10,7 @@ help: ## Show help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\t\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 copy-envs: ## Create .secrets.toml file
-	@cp -n configs/secrets.toml.sample .secrets.toml
+	@cp -n example.secrets.toml .secrets.toml
 
 setup: ## Setup poetry environment - Create virtualenv and activate it
 	poetry shell
@@ -43,6 +43,9 @@ db-up: ## Run migrations
 
 db-down: ## Drop last migration
 	poetry run alembic downgrade -1
+
+run-script: ## Run a script
+	PYTHONPATH=. poetry run python src/scripts/simulate_transactions.py
 
 clean: ## Clean up
 	@find ./ -name '*.pyc' -exec rm -f {} \;
